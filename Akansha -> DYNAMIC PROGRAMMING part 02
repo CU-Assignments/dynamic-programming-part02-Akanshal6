@@ -1,0 +1,250 @@
+55. Jump Game
+Medium
+Topics
+Companies
+You are given an integer array nums. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position.
+
+Return true if you can reach the last index, or false otherwise.
+
+CODE:
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int goal = nums.size() - 1;
+
+        for (int i = nums.size() - 2; i >= 0; i--) {
+            if (i + nums[i] >= goal) {
+                goal = i;
+            }
+        }
+
+        return goal == 0;        
+    }
+};
+
+
+62. Unique Paths
+Medium
+Topics
+Companies
+There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
+
+Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+
+The test cases are generated so that the answer will be less than or equal to 2 * 109.
+
+CODE:
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        std::vector<int> aboveRow(n, 1);
+
+        for (int row = 1; row < m; row++) {
+            std::vector<int> currentRow(n, 1);
+            for (int col = 1; col < n; col++) {
+                currentRow[col] = currentRow[col - 1] + aboveRow[col];
+            }
+            aboveRow = currentRow;
+        }
+
+        return aboveRow[n - 1];        
+    }
+};
+
+
+322. Coin Change
+Medium
+Topics
+Companies
+You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
+
+Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
+
+You may assume that you have an infinite number of each kind of coin.
+
+CODE:
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        vector<int> minCoins(amount + 1, amount + 1);
+        minCoins[0] = 0;
+
+        for (int i = 1; i <= amount; i++) {
+            for (int j = 0; j < coins.size(); j++) {
+                if (i - coins[j] >= 0) {
+                    minCoins[i] = min(minCoins[i], 1 + minCoins[i - coins[j]]);
+                }
+            }
+        }
+
+        return minCoins[amount] != amount + 1 ? minCoins[amount] : -1;        
+    }
+};
+
+
+300. Longest Increasing Subsequence
+Medium
+Topics
+Companies
+Given an integer array nums, return the length of the longest strictly increasing subsequence.
+
+CODE:
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        vector<int> res;
+
+        for (int n : nums) {
+            if (res.empty() || res.back() < n) {
+                res.push_back(n);
+            } else {
+                int idx = binarySearch(res, n);
+                res[idx] = n;
+            }
+        }
+
+        return res.size();        
+    }
+
+private:
+    int binarySearch(const vector<int>& arr, int target) {
+        int left = 0;
+        int right = arr.size() - 1;
+
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (arr[mid] == target) {
+                return mid;
+            } else if (arr[mid] > target) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        return left;
+    }    
+};
+
+
+152. Maximum Product Subarray
+Medium
+Topics
+Companies
+Given an integer array nums, find a subarray that has the largest product, and return the product.
+
+The test cases are generated so that the answer will fit in a 32-bit integer.
+
+ CODE:
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int maxi = INT_MIN;
+        int prod=1;
+
+        for(int i=0;i<nums.size();i++)
+        {
+          prod*=nums[i];
+          maxi=max(prod,maxi);
+          if(prod==0)
+           prod=1;
+        }
+        prod=1;
+        for(int i=nums.size()-1;i>=0;i--)
+        {
+          prod*=nums[i];
+
+          maxi=max(prod,maxi);
+          if(prod==0)
+           prod=1;
+        }
+        return maxi;
+    }
+};
+
+
+91. Decode Ways
+Medium
+Topics
+Companies
+You have intercepted a secret message encoded as a string of numbers. The message is decoded via the following mapping:
+
+"1" -> 'A'
+
+"2" -> 'B'
+
+...
+
+"25" -> 'Y'
+
+"26" -> 'Z'
+
+However, while decoding the message, you realize that there are many different ways you can decode the message because some codes are contained in other codes ("2" and "5" vs "25").
+
+For example, "11106" can be decoded into:
+
+"AAJF" with the grouping (1, 1, 10, 6)
+"KJF" with the grouping (11, 10, 6)
+The grouping (1, 11, 06) is invalid because "06" is not a valid code (only "6" is valid).
+Note: there may be strings that are impossible to decode.
+
+Given a string s containing only digits, return the number of ways to decode it. If the entire string cannot be decoded in any valid way, return 0.
+
+The test cases are generated so that the answer fits in a 32-bit integer.
+
+CODE:
+class Solution {
+public:
+    int numDecodings(string s) {
+        if (s[0] == '0') {
+            return 0;
+        }
+
+        int n = s.length();
+        vector<int> dp(n + 1, 0);
+        dp[0] = dp[1] = 1;
+
+        for (int i = 2; i <= n; i++) {
+            int one = s[i - 1] - '0';
+            int two = stoi(s.substr(i - 2, 2));
+
+            if (1 <= one && one <= 9) {
+                dp[i] += dp[i - 1];
+            }
+            if (10 <= two && two <= 26) {
+                dp[i] += dp[i - 2];
+            }
+        }
+
+        return dp[n];        
+    }
+};
+
+
+139. Word Break
+Medium
+Topics
+Companies
+Given a string s and a dictionary of strings wordDict, return true if s can be segmented into a space-separated sequence of one or more dictionary words.
+
+Note that the same word in the dictionary may be reused multiple times in the segmentation.
+
+CODE:
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        vector<bool> dp(s.size() + 1, false);
+        dp[0] = true;
+
+        for (int i = 1; i <= s.size(); i++) {
+            for (const string& w : wordDict) {
+                int start = i - w.length();
+                if (start >= 0 && dp[start] && s.substr(start, w.length()) == w) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[s.size()];        
+    }
+};
